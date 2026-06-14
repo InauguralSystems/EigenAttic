@@ -1,7 +1,7 @@
 ## What this is
 
-EigenAttic is a **sandbox repo** holding two piles of salvaged work
-from older EigenScript projects:
+EigenAttic is a **sandbox repo** holding three piles of salvaged
+work from older EigenScript projects:
 
 1. **`ml/`** — pure-EigenScript ML library code (~9.6K lines of
    `.eigs`) written against the v0.8.x dialect. RoPE, RMSNorm,
@@ -9,9 +9,12 @@ from older EigenScript projects:
    The work here is porting forward to v0.14.2+.
 2. **`crypto/`** — experimental "geometric encryption" PoC. Lives
    under `crypto/python_reference/` as the original Python code
-   from EigenChat's vendored Python-prototype EigenScript. The
-   work is porting to current EigenScript and deciding if the
-   idea has legs.
+   from EigenChat's vendored Python-prototype EigenScript.
+3. **`diffusion/`** — geometric diffusion image generation PoC.
+   **Sibling experiment to `crypto/`** — the source explicitly
+   says it "adapts encryption patterns for diffusion-based image
+   generation," sharing `TemporalState` and `XORObserver`
+   primitives. Investigate as a pair.
 
 Unlike EigenGauntlet / EigenRegex / EigenMiniSat / DMG, **EigenAttic
 is not a forcing function.** It has no GAPS.md, no test discipline,
@@ -61,22 +64,30 @@ upstream target is **`EigenScript/lib/`** as a new module (e.g.
 `lib/optim.eigs`, `lib/positional.eigs`). Don't graduate by
 copying — re-derive into the current stdlib's idioms.
 
-## Crypto pile — what it actually is
+## Crypto + diffusion piles — what they actually are
 
 `crypto/python_reference/core.py` implements a "geometric
-encryption" scheme based on the LRVM (Lightlike Relational Vector
-Model) — uses the `OF` operator's lightlike norm-zero property to
-hide plaintext in a vector trajectory. `xor_observer.py` is a
-companion XOR-observer construction.
+encryption" scheme: integer XOR with a PRNG keystream, CBC
+chaining, HMAC-SHA256 authentication, with `XORObserver` and
+`TemporalState` wrapped around it. `xor_observer.py` is the
+companion observer construction.
 
-This was tagged EXPERIMENTAL in EigenChat's `replit.md`. It's a
-toy. The work is:
+`diffusion/python_reference/core.py` is **the same primitives
+reapplied to image generation** — the source's docstring is
+explicit: `TemporalState → DiffusionState`, `XORObserver →
+NoiseObserver`, XOR keystream → Gaussian noise schedule. So
+the two piles share the load-bearing math.
 
-1. Decide whether the LRVM-as-cipher idea is interesting enough to
-   port at all (it may just be "XOR with extra steps").
-2. If yes, port the core math to current EigenScript using the
-   existing geometric builtins.
-3. If no, archive it here and move on.
+Both were tagged EXPERIMENTAL in EigenChat's `replit.md`. They're
+toys. The work is:
+
+1. **Investigate as a pair.** If the XORObserver/TemporalState
+   primitives reduce to "XOR-with-extra-steps" / "standard DDPM
+   with a Minkowski-flavored convergence check," both piles get
+   the same verdict.
+2. If the primitives genuinely add something, port both to current
+   EigenScript using existing geometric builtins.
+3. If they don't, archive both here and move on.
 
 ## Hard-won rules
 

@@ -4,7 +4,7 @@ Salvaged work from older EigenScript projects, parked in one place so
 none of it gets lost and any of it can be picked up when there's an
 itch to scratch.
 
-Two directories, two different missions:
+Three directories:
 
 - **`ml/`** — pure-EigenScript ML library code (attention, RoPE,
   RMSNorm, SwiGLU, KVCache, Adam/AdamW, CNN, RNN, LLM blocks).
@@ -12,10 +12,12 @@ Two directories, two different missions:
   it forward to v0.14.2+** and deciding what (if anything) graduates
   into `EigenScript/lib/`.
 - **`crypto/`** — experimental "geometric encryption" PoC
-  (XOR-observer pattern + a 434-line core). Currently Python,
-  written against the old EigenScript Python prototype. The work
-  is **porting it to current EigenScript and deciding whether the
-  idea has legs**.
+  (XOR-observer pattern + a 434-line core). Currently Python.
+- **`diffusion/`** — geometric diffusion image generation PoC.
+  **Sibling experiment to `crypto/`** — same `TemporalState` /
+  `XORObserver` primitives, different application (Gaussian
+  noise schedule instead of XOR keystream). Investigate them
+  together.
 
 Neither pile ships as part of the live portfolio. EigenAttic is
 explicitly a *sandbox* — pick up what's interesting, leave the
@@ -44,6 +46,9 @@ ml/
 
 crypto/
   python_reference/   the original Python implementation as it came out of EigenChat
+
+diffusion/
+  python_reference/   sibling experiment — same primitives, image generation instead of encryption
 ```
 
 ## Status
