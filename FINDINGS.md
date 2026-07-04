@@ -4,6 +4,47 @@
 cosmetic "Minkowski signature" overlay that doesn't affect the
 output**. The geometric layer is monitoring, not math.
 
+> ### ⚠️ SECURITY: the v2 crypto is BROKEN (two-time pad). Do not port it.
+>
+> Beyond the "decorative geometry" finding below, the v2 cipher has a
+> **fatal confidentiality flaw**: the keystream carries no IV and no
+> nonce, so every message encrypted under a given key reuses the
+> **identical** keystream. Encrypting two messages under one key leaks
+> `P_a XOR P_b` to anyone holding the (cleartext) ciphertexts and IVs —
+> a classic two-time pad. With a crib, one plaintext fully recovers the
+> other. Reproduce it: `python3 crypto/two_time_pad_break.py`.
+>
+> **Root cause** (`crypto/python_reference/core.py`): `cbc_encrypt_blocks`
+> calls `KeystreamGenerator(enc_key, 0)`. The counter always starts at 0
+> and `enc_key` is fixed per key, so `KS_i = sha256(enc_key ‖ i)` is
+> message-independent. For any block, `C_i XOR C_{i-1} = P_i XOR KS_i`;
+> XOR two messages' ciphertexts and the keystream *and* the CBC chain
+> cancel. The IV only perturbs the chain — it never reaches the PRF.
+>
+> **The gut-punch:** the spec (`crypto/GEOMETRIC_ENCRYPTION_SPEC.md`
+> §3.2) *specified* the fix — "the iteration counter becomes a nonce" —
+> and the code dropped it. `temporal_offset` is defined, written into
+> the header, and then **ignored** in favor of a hard-coded `0`.
+>
+> **Why it passed testing:** round-trip, "same plaintext → different
+> ciphertext" (§7.2), and the avalanche test (§9.2) all pass — a fresh
+> IV makes the ciphertexts *look* different via CBC cascade. None of
+> those tests XORs two different messages together, which is the only
+> thing that exposes the leak. Every green test hides the break.
+>
+> **What IS correct:** integrity is textbook — HMAC-SHA256,
+> Encrypt-then-MAC, constant-time compare, MAC over header+IV+ciphertext,
+> verified before unpad (no v2 padding oracle). PBKDF2 stretching and
+> enc/mac key separation are sound in shape. The flaw is narrow and
+> confined to keystream construction — but it's fatal.
+>
+> **If EigenOS ever wants encryption-at-rest:** don't lift this. The
+> honest primitive is `sha256(enc_key ‖ IV ‖ counter)` CTR + the
+> (already-correct) HMAC EtM — ~15 lines over the SHA-256/HMAC builtins
+> the kernel already ships, without this booby trap. See
+> [[project_eigen_os]] for the buffer-input gap in the hash builtins
+> that would need closing first.
+
 The two piles share the exact same pattern:
 
 | Pile | Real construction underneath | Decorative geometric overlay |

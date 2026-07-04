@@ -5,6 +5,15 @@ EXPERIMENTAL in the source. **Currently Python-only**, written
 against EigenChat's vendored Python prototype of EigenScript.
 Nothing runs against current EigenScript.
 
+> **⚠️ The v2 cipher is cryptographically broken — a two-time pad.**
+> The keystream has no IV/nonce, so any two messages under one key
+> leak `P_a XOR P_b`. `python3 two_time_pad_break.py` demonstrates it
+> (recovers one plaintext from the other with no key). Integrity
+> (HMAC Encrypt-then-MAC) is fine; confidentiality is not. Full
+> analysis in `../FINDINGS.md`. **Do not port this construction.**
+> The "honest question" below is answered: it reduces to a stream
+> cipher whose keystream is reused across messages, dressed in CBC.
+
 ## Files
 
 | File | Lines | Contents |
