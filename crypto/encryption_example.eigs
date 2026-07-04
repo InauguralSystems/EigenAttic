@@ -1,0 +1,59 @@
+# EigenScript Geometric Encryption Example
+# ==========================================
+# EXPERIMENTAL/RESEARCH ONLY - Not for production security
+#
+# This demonstrates EigenScript's geometric encryption using:
+# - XOR as observer (sets conditions, doesn't choose outcomes)
+# - Temporal tracking (bit flips tracked like time)
+# - Minkowski signatures (geometric state classification)
+
+# Define our test message and passphrase
+message is "Hello, EigenScript! This is a secret message."
+passphrase is "my_secret_key_2024"
+
+print of "=== EigenScript Geometric Encryption Demo ==="
+print of ""
+print of "Original message:"
+print of message
+print of ""
+
+# Generate key info (for debugging/inspection)
+print of "Generating key from passphrase..."
+key_input is passphrase
+key_info is eigen_keygen of key_input
+print of "Key info:"
+print of key_info
+print of ""
+
+# Encrypt the message
+# Format: "plaintext|passphrase"
+encrypt_input is message + "|" + passphrase
+print of "Encrypting..."
+encrypted is eigen_encrypt of encrypt_input
+print of "Encrypted (hex):"
+print of encrypted
+print of ""
+
+# Decrypt the message
+# Format: "ciphertext_hex|passphrase"
+decrypt_input is encrypted + "|" + passphrase
+print of "Decrypting..."
+decrypted is eigen_decrypt of decrypt_input
+print of "Decrypted message:"
+print of decrypted
+print of ""
+
+# Show comparison
+print of "Original vs Decrypted comparison:"
+print of message
+print of decrypted
+
+print of ""
+print of "=== How It Works ==="
+print of "1. XOR acts as the 'observer' - setting interference conditions"
+print of "2. Bit flips are tracked temporally (like time evolution)"
+print of "3. Each byte gets a Minkowski signature (timelike/spacelike/lightlike)"
+print of "4. The key configures the observer network + temporal offset"
+print of ""
+print of "This is EXPERIMENTAL research-grade encryption."
+print of "Do not use for production security."

@@ -12,6 +12,24 @@ Nothing runs against current EigenScript.
 | `python_reference/core.py` | 434 | LRVM-based encryption/decryption core, key generation |
 | `python_reference/xor_observer.py` | 138 | XOR-observer construction |
 | `python_reference/__init__.py` | 29 | Module exports |
+| `GEOMETRIC_ENCRYPTION_SPEC.md` | 435 | The original v2.1 spec from EigenChat `docs/crypto/` (salvaged 2026-07-03, missed in the first pass) |
+| `encryption_example.eigs` | ~60 | Old-dialect demo calling the `eigen_encrypt`/`eigen_decrypt`/`eigen_keygen` builtins the Python prototype exposed. Won't run on current EigenScript. |
+
+## Provenance note (2026-07-03)
+
+Two recall-checked facts, verified against the EigenChat source:
+
+- **"Diffusion" in this scheme is the classical Shannon sense** —
+  "CBC mode for block diffusion." There was never a diffusion-
+  *process* cipher (plaintext hidden in a noising trajectory).
+  The spec's algorithm sections are plain XOR-keystream + CBC;
+  the LRVM/trajectory language is framing, not mechanism.
+- **The arrow ran crypto → diffusion, not the reverse.** The
+  `diffusion/` pile's own docstring: "Adapts encryption patterns
+  for diffusion-based image generation" — keystream-hides-data
+  generalized to noise-hides-images, both reversible given the
+  schedule. The shared insight is real; the DDPM pile is where
+  "diffusion-based" literally applies.
 
 ## The idea (as best I can tell)
 
